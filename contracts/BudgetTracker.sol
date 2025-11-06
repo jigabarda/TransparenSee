@@ -5,15 +5,26 @@ contract BudgetTracker {
     struct Budget {
         uint256 allocatedAmount;
         uint256 spentAmount;
-        string department;
+        string purpose;
         uint256 timestamp;
     }
-    
+
+    struct Department {
+        string name;
+        address wallet;
+    }
+
+    mapping(address => Department) public departments;
     mapping(address => Budget[]) public budgets;
+
     address public admin;
-    
+
+    event DepartmentRegistered(address wallet, string name);
+    event BudgetAllocated(address department, uint256 amount, string purpose);
+    event SpendingRecorded(address department, uint256 amount, string purpose);
+
     modifier onlyAdmin() {
-        require(msg.sender == admin, "Only admin can add budgets");
+        require(msg.sender == admin, "Only admin can call this");
         _;
     }
 
@@ -21,37 +32,38 @@ contract BudgetTracker {
         admin = msg.sender;
     }
 
-    // Allocate a new budget to a department
-    function allocateBudget(address departmentAddress, uint256 amount, string memory departmentName) public onlyAdmin {
-        budgets[departmentAddress].push(Budget(amount, 0, departmentName, block.timestamp));
+    // Register a government department
+    function registerDepartment(address _wallet, string memory _name) public onlyAdmin {
+        departments[_wallet] = Department(_name, _wallet);
+        emit DepartmentRegistered(_wallet, _name);
     }
 
-    // Record spending for a department
-    function recordSpending(address departmentAddress, uint256 amount) public onlyAdmin {
-        require(amount > 0, "Spending amount must be greater than zero");
-        
-        Budget[] storage deptBudgets = budgets[departmentAddress];
-        uint256 budgetCount = deptBudgets.length;
-        
-        // Make sure there is an allocated budget for the department
-        require(budgetCount > 0, "No budget allocated for this department");
-        
-        Budget storage deptBudget = deptBudgets[budgetCount - 1];
-        require(deptBudget.allocatedAmount >= deptBudget.spentAmount + amount, "Exceeds allocated budget");
-        
-        deptBudget.spentAmount += amount;
+    // Allocate a budget for a department
+    function allocateBudget(address department, uint256 amount, string memory purpose) public onlyAdmin {
+        budgets[department].push(Budget(amount, 0, purpose, block.timestamp));
+        emit BudgetAllocated(department, amount, purpose);
     }
 
-    // View budget for a department
-    function viewBudget(address departmentAddress) public view returns (uint256 allocated, uint256 spent) {
-        Budget[] storage deptBudgets = budgets[departmentAddress];
-        uint256 budgetCount = deptBudgets.length;
-        
-        if (budgetCount > 0) {
-            Budget storage deptBudget = deptBudgets[budgetCount - 1];
-            return (deptBudget.allocatedAmount, deptBudget.spentAmount);
-        } else {
-            return (0, 0);
-        }
+    // Record spending
+    function recordSpending(address department, uint256 amount, string memory purpose) public onlyAdmin {
+        require(budgets[department].length > 0, "No budget allocated");
+
+        Budget storage latest = budgets[department][budgets[department].length - 1];
+        require(latest.spentAmount + amount <= latest.allocatedAmount, "Over budget");
+
+        latest.spentAmount += amount;
+        emit SpendingRecorded(department, amount, purpose);
+    }
+
+    // View latest budget
+    function viewBudget(address department) public view returns (uint256 allocated, uint256 spent, string memory purpose) {
+        require(budgets[department].length > 0, "No budget allocated");
+        Budget memory b = budgets[department][budgets[department].length - 1];
+        return (b.allocatedAmount, b.spentAmount, b.purpose);
+    }
+
+    // Get all budgets for transparency
+    function getBudgets(address department) public view returns (Budget[] memory) {
+        return budgets[department];
     }
 }
