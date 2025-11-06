@@ -1,48 +1,58 @@
-import React, { useState, useEffect } from "react";
-import Web3 from "web3";
+import React, { useState } from "react";
+import axios from "axios";
 
 function App() {
-  const [allocated, setAllocated] = useState(0);
-  const [spent, setSpent] = useState(0);
-  const [departmentAddress, setDepartmentAddress] = useState("");
+  const [department, setDepartment] = useState("");
+  const [budgets, setBudgets] = useState([]);
 
-  const web3 = new Web3(window.ethereum);
-  const contractABI = [
-    /* ABI goes here */
-  ]; // Same ABI as in backend
-  const contractAddress = "0xYourContractAddress";
-  const contract = new web3.eth.Contract(contractABI, contractAddress);
-
-  useEffect(() => {
-    window.ethereum.request({ method: "eth_requestAccounts" }); // MetaMask login
-  }, []);
-
-  const fetchBudget = async () => {
+  const fetchBudgets = async () => {
     try {
-      const result = await contract.methods
-        .viewBudget(departmentAddress)
-        .call();
-      setAllocated(result[0]);
-      setSpent(result[1]);
-    } catch (error) {
-      console.error(error);
+      const res = await axios.get(
+        `http://localhost:3000/budgets/${department}`
+      );
+      setBudgets(res.data);
+    } catch (err) {
+      alert("Failed to fetch budgets");
     }
   };
 
   return (
-    <div className="App">
-      <h1>TransparentGov Dashboard</h1>
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">🧾 TransparentGov Dashboard</h1>
       <input
-        type="text"
-        placeholder="Department Address"
-        value={departmentAddress}
-        onChange={(e) => setDepartmentAddress(e.target.value)}
+        className="border p-2 w-full"
+        placeholder="Enter Department Address"
+        value={department}
+        onChange={(e) => setDepartment(e.target.value)}
       />
-      <button onClick={fetchBudget}>Check Budget</button>
+      <button
+        onClick={fetchBudgets}
+        className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        View Budgets
+      </button>
 
-      <div>
-        <h3>Allocated Budget: {allocated}</h3>
-        <h3>Spent Budget: {spent}</h3>
+      <div className="mt-6">
+        {budgets.length > 0 ? (
+          budgets.map((b, i) => (
+            <div key={i} className="p-3 border-b">
+              <p>
+                <b>Purpose:</b> {b.purpose}
+              </p>
+              <p>
+                <b>Allocated:</b> {b.allocatedAmount}
+              </p>
+              <p>
+                <b>Spent:</b> {b.spentAmount}
+              </p>
+              <p>
+                <b>Date:</b> {new Date(b.timestamp * 1000).toLocaleString()}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500 mt-4">No budgets found</p>
+        )}
       </div>
     </div>
   );
