@@ -1,5 +1,6 @@
 const express = require("express");
 const Web3 = require("web3");
+<<<<<<< HEAD
 const bodyParser = require("body-parser");
 const app = express();
 const port = 3000;
@@ -68,3 +69,33 @@ app.get("/budgets/:dept", async (req, res) => {
 app.listen(port, () =>
   console.log(`Transparency API running on http://localhost:${port}`)
 );
+=======
+const app = express();
+const port = 3000;
+
+// Web3 setup (using Ganache for local dev)
+const web3 = new Web3("http://localhost:8545");
+const contractABI = [
+  /* ABI goes here */
+]; // Paste ABI from the compiled contract
+const contractAddress = "0xYourContractAddress"; // Deploy your contract first to get this address
+
+const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+// Basic endpoint to check the current budget
+app.get("/budget/:departmentAddress", async (req, res) => {
+  try {
+    const departmentAddress = req.params.departmentAddress;
+    const budget = await contract.methods.viewBudget(departmentAddress).call();
+    res.json({ allocated: budget[0], spent: budget[1] });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch budget" });
+  }
+});
+
+// Add more routes as needed...
+
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
+>>>>>>> 54778d3 (create server.js for backend endpoint)
