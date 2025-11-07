@@ -1,69 +1,59 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.21;
 
 contract BudgetTracker {
-    struct Budget {
-        uint256 allocatedAmount;
-        uint256 spentAmount;
-        string purpose;
-        uint256 timestamp;
-    }
+    address public admin;
 
     struct Department {
         string name;
-        address wallet;
+        bool exists;
     }
 
     mapping(address => Department) public departments;
-    mapping(address => Budget[]) public budgets;
 
-    address public admin;
-
-    event DepartmentRegistered(address wallet, string name);
-    event BudgetAllocated(address department, uint256 amount, string purpose);
-    event SpendingRecorded(address department, uint256 amount, string purpose);
-
-    modifier onlyAdmin() {
-        require(msg.sender == admin, "Only admin can call this");
-        _;
+    struct Allocation {
+        uint amount;
+        uint spent;
+        string purpose;
     }
+
+    mapping(address => Allocation[]) public allocations;
+
+    event DepartmentRegistered(address department, string name);
+    event BudgetAllocated(address department, uint amount, string purpose);
+    event SpendingRecorded(address department, uint amount, string purpose);
 
     constructor() {
         admin = msg.sender;
     }
 
-    // Register a government department
-    function registerDepartment(address _wallet, string memory _name) public onlyAdmin {
-        departments[_wallet] = Department(_name, _wallet);
-        emit DepartmentRegistered(_wallet, _name);
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can perform this action");
+        _;
     }
 
-    // Allocate a budget for a department
-    function allocateBudget(address department, uint256 amount, string memory purpose) public onlyAdmin {
-        budgets[department].push(Budget(amount, 0, purpose, block.timestamp));
+    function registerDepartment(address wallet, string memory name) public onlyAdmin {
+        require(!departments[wallet].exists, "Department already registered");
+        departments[wallet] = Department(name, true);
+        emit DepartmentRegistered(wallet, name);
+    }
+
+    function allocateBudget(address department, uint amount, string memory purpose) public onlyAdmin {
+        require(departments[department].exists, "Department not registered");
+        allocations[department].push(Allocation(amount, 0, purpose));
         emit BudgetAllocated(department, amount, purpose);
     }
 
-    // Record spending
-    function recordSpending(address department, uint256 amount, string memory purpose) public onlyAdmin {
-        require(budgets[department].length > 0, "No budget allocated");
-
-        Budget storage latest = budgets[department][budgets[department].length - 1];
-        require(latest.spentAmount + amount <= latest.allocatedAmount, "Over budget");
-
-        latest.spentAmount += amount;
+    function recordSpending(address department, uint amount, string memory purpose) public onlyAdmin {
+        require(departments[department].exists, "Department not registered");
+        require(allocations[department].length > 0, "No allocations available");
+        Allocation storage last = allocations[department][allocations[department].length - 1];
+        require(last.spent + amount <= last.amount, "Insufficient funds");
+        last.spent += amount;
         emit SpendingRecorded(department, amount, purpose);
     }
 
-    // View latest budget
-    function viewBudget(address department) public view returns (uint256 allocated, uint256 spent, string memory purpose) {
-        require(budgets[department].length > 0, "No budget allocated");
-        Budget memory b = budgets[department][budgets[department].length - 1];
-        return (b.allocatedAmount, b.spentAmount, b.purpose);
-    }
-
-    // Get all budgets for transparency
-    function getBudgets(address department) public view returns (Budget[] memory) {
-        return budgets[department];
+    function getBudgets(address department) public view returns (Allocation[] memory) {
+        return allocations[department];
     }
 }
