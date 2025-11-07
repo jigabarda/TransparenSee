@@ -1,7 +1,36 @@
 {
   "devDependencies": {
     "autoprefixer": "^10.4.21",
+    "ganache": "^7.9.2",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17"
-  }
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "web3": "^4.16.0"
+  },
+  "name": "transparensee",
+  "version": "1.0.0",
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jigabarda/TransparenSee.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jigabarda/TransparenSee/issues"
+  },
+  "homepage": "https://github.com/jigabarda/TransparenSee#readme"
 }

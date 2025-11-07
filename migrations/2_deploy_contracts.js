@@ -1,5 +1,5 @@
 const BudgetTracker = artifacts.require("BudgetTracker");
 
-module.exports = async function (deployer) {
-  await deployer.deploy(BudgetTracker);
+module.exports = function (deployer) {
+  deployer.deploy(BudgetTracker);
 };

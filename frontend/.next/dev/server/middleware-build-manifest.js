@@ -1,0 +1,45 @@
+globalThis.__BUILD_MANIFEST = {
+  "pages": {
+    "/": [
+      "static/chunks/[root-of-the-server]__8cc76c5c._.js",
+      "static/chunks/9a5d5_next_dist_compiled_56f74885._.js",
+      "static/chunks/9a5d5_next_dist_shared_lib_74ff864c._.js",
+      "static/chunks/9a5d5_next_dist_client_710fd477._.js",
+      "static/chunks/9a5d5_next_dist_7abd9486._.js",
+      "static/chunks/9a5d5_react-dom_06203b18._.js",
+      "static/chunks/1cf71_web3-errors_lib_esm_5298239d._.js",
+      "static/chunks/1cf71_zod_v3_f165c6e9._.js",
+      "static/chunks/1cf71_web3-utils_lib_esm_4c6feb2a._.js",
+      "static/chunks/1cf71_web3-core_lib_esm_4f39fc05._.js",
+      "static/chunks/1cf71_web3-eth-accounts_lib_esm_2e25efc3._.js",
+      "static/chunks/1cf71_@noble_curves_esm_c169eb07._.js",
+      "static/chunks/1cf71_web3-eth_lib_esm_f5d9197a._.js",
+      "static/chunks/1cf71_web3-eth-abi_lib_esm_f2d6bc44._.js",
+      "static/chunks/1cf71_web3-eth-contract_lib_esm_b1a80bf1._.js",
+      "static/chunks/transparensee_32f8ea7d._.js",
+      "static/chunks/transparensee_frontend_pages_index_2da965e7._.js",
+      "static/chunks/turbopack-transparensee_frontend_pages_index_f8916c15._.js"
+    ],
+    "/_app": [
+      "static/chunks/9a5d5_next_dist_compiled_7ea1caf8._.js",
+      "static/chunks/9a5d5_next_dist_shared_lib_74ff864c._.js",
+      "static/chunks/9a5d5_next_dist_client_710fd477._.js",
+      "static/chunks/9a5d5_next_dist_9f058822._.js",
+      "static/chunks/9a5d5_next_app_1deda9bc.js",
+      "static/chunks/[next]_entry_page-loader_ts_b9d67721._.js",
+      "static/chunks/9a5d5_react-dom_06203b18._.js",
+      "static/chunks/9a5d5_83e385ca._.js",
+      "static/chunks/[root-of-the-server]__74e9c822._.js",
+      "static/chunks/transparensee_frontend_pages__app_2da965e7._.js",
+      "static/chunks/turbopack-transparensee_frontend_pages__app_62ea1858._.js"
+    ]
+  },
+  "devFiles": [],
+  "polyfillFiles": [],
+  "lowPriorityFiles": [],
+  "rootMainFiles": []
+};
+globalThis.__BUILD_MANIFEST.lowPriorityFiles = [
+"/static/" + process.env.__NEXT_BUILD_ID + "/_buildManifest.js",
+"/static/" + process.env.__NEXT_BUILD_ID + "/_ssgManifest.js"
+];
