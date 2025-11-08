@@ -58,12 +58,15 @@ module.exports = {
    */
 
   networks: {
+    development: {
+      host: "127.0.0.1",
+      port: 8545,
+      network_id: "*", // Match any network id
+    },
     ganache: {
       host: "127.0.0.1",
-      port: 8545, // 👈 MUST match Ganache RPC port in your terminal
-      network_id: 1337, // 👈 must match Ganache Chain Id
-      gas: 6721975, // 👈 same as Ganache block gas limit
-      gasPrice: 2000000000,
+      port: 8545,
+      network_id: 1337,
     },
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
