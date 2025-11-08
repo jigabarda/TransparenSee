@@ -12184,12 +12184,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0xcEfD5CF95423B229f335f0B18562C4019667E044",
-      "transactionHash": "0x4d235ad81fbf2a594f9e926e6da62967dcdaf7169ee699e8eaacf4877182b7d8"
+      "address": "0x9485659376fe14f55225128c6cf538BBFbcD0842",
+      "transactionHash": "0xb459c579072ac2614a7d0a6174b699dee4d6b2660819b3d5cdf4027f5047a0fe"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-11-07T14:29:35.629Z",
+  "updatedAt": "2025-11-08T13:03:12.854Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
