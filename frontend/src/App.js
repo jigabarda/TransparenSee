@@ -13,41 +13,48 @@ function App() {
   const [spendAmount, setSpendAmount] = useState("");
   const [spendPurpose, setSpendPurpose] = useState("");
 
-  // 🧩 Connect wallet and contract
+  // 🧩 Initialize Web3 + Smart Contract
   useEffect(() => {
     const init = async () => {
       try {
         if (!window.ethereum) {
-          setStatus("MetaMask not found. Please install it.");
+          setStatus("🦊 MetaMask not detected. Please install it.");
           return;
         }
 
+        // Connect MetaMask
         const web3 = new Web3(window.ethereum);
         await window.ethereum.request({ method: "eth_requestAccounts" });
 
         const accounts = await web3.eth.getAccounts();
         setAccount(accounts[0]);
 
+        // Detect Ganache local network
         const networkId = await web3.eth.net.getId();
-        let deployedNetwork = BudgetTracker.networks[networkId];
+        console.log("Connected network ID:", networkId);
 
-        // ✅ Manual fallback in case network mismatch
+        // Retrieve deployed contract info
+        let deployedNetwork = BudgetTracker.networks[networkId];
         if (!deployedNetwork) {
+          console.warn(
+            "⚠️ No matching network in ABI file. Using fallback address..."
+          );
           deployedNetwork = {
-            address: "0xcEfD5CF95423B229f335f0B18562C4019667E044", // 👈 Your deployed contract
+            address: "0xF4e4Fbe497c969fBaccEd655edd547c359A28ebD", // <== Replace with your latest deployed contract address
           };
         }
 
+        // Load contract instance
         const instance = new web3.eth.Contract(
           BudgetTracker.abi,
-          deployedNetwork.address
+          deployedNetwork && deployedNetwork.address
         );
 
         setContract(instance);
-        setStatus("Contract connected successfully ✅");
+        setStatus("✅ Connected to Ganache & Smart Contract");
       } catch (error) {
-        console.error(error);
-        setStatus("Contract not deployed on the current network ❌");
+        console.error("Connection error:", error);
+        setStatus("❌ Failed to connect to blockchain or contract.");
       }
     };
 
@@ -56,46 +63,45 @@ function App() {
 
   // 🏢 Register Department
   const registerDepartment = async () => {
-    if (contract && account) {
-      try {
-        await contract.methods
-          .registerDepartment(departmentWallet, departmentName)
-          .send({ from: account });
-        alert("Department registered successfully!");
-      } catch (error) {
-        console.error(error);
-        alert("Error registering department.");
-      }
+    if (!contract || !account) return alert("Contract not connected.");
+    try {
+      await contract.methods
+        .registerDepartment(departmentWallet, departmentName)
+        .send({ from: account });
+      alert("✅ Department registered successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Error registering department.");
     }
   };
 
   // 💰 Allocate Budget
   const allocateBudget = async () => {
-    if (contract && account) {
-      try {
-        await contract.methods
-          .allocateBudget(departmentWallet, budgetAmount, budgetPurpose)
-          .send({ from: account });
-        alert("Budget allocated successfully!");
-      } catch (error) {
-        console.error(error);
-        alert("Error allocating budget.");
-      }
+    if (!contract || !account) return alert("Contract not connected.");
+    try {
+      const amountWei = Web3.utils.toWei(budgetAmount, "ether");
+      await contract.methods
+        .allocateBudget(departmentWallet, amountWei, budgetPurpose)
+        .send({ from: account });
+      alert("✅ Budget allocated successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Error allocating budget.");
     }
   };
 
   // 🧾 Record Spending
   const recordSpending = async () => {
-    if (contract && account) {
-      try {
-        await contract.methods
-          .recordSpending(departmentWallet, spendAmount, spendPurpose)
-          .send({ from: account });
-        alert("Spending recorded successfully!");
-      } catch (error) {
-        console.error(error);
-        alert("Error recording spending.");
-      }
+    if (!contract || !account) return alert("Contract not connected.");
+    try {
+      const amountWei = Web3.utils.toWei(spendAmount, "ether");
+      await contract.methods
+        .recordSpending(departmentWallet, amountWei, spendPurpose)
+        .send({ from: account });
+      alert("✅ Spending recorded successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Error recording spending.");
     }
   };
 
@@ -110,7 +116,7 @@ function App() {
       </p>
       <hr />
 
-      {/* Register Department */}
+      {/* 🏢 Register Department */}
       <h3>Register Department</h3>
       <input
         type="text"
@@ -128,11 +134,11 @@ function App() {
 
       <hr />
 
-      {/* Allocate Budget */}
+      {/* 💰 Allocate Budget */}
       <h3>Allocate Budget</h3>
       <input
         type="text"
-        placeholder="Amount"
+        placeholder="Amount (ETH)"
         value={budgetAmount}
         onChange={(e) => setBudgetAmount(e.target.value)}
       />
@@ -146,11 +152,11 @@ function App() {
 
       <hr />
 
-      {/* Record Spending */}
+      {/* 🧾 Record Spending */}
       <h3>Record Spending</h3>
       <input
         type="text"
-        placeholder="Amount"
+        placeholder="Amount (ETH)"
         value={spendAmount}
         onChange={(e) => setSpendAmount(e.target.value)}
       />
